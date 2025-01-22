@@ -12,7 +12,7 @@ drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
 # TODO
 # open webcam
-cap = cv2.VideoCapture
+cap = cv2.VideoCapture(0)
 
 # while webcam is open
 while cap.isOpened():
@@ -138,7 +138,7 @@ while cap.isOpened():
         mp_drawing.draw_landmarks(
             image=image, 
             landmark_list=face_landmarks, 
-            connctions=mp_face_mesh.FACE_CONNECTIONS, 
+            connections=mp_face_mesh.FACEMESH_CONTOURS, 
             landmark_drawing_spec=drawing_spec, 
             connection_drawing_spec=drawing_spec
         )
