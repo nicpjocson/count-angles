@@ -12,7 +12,7 @@ drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
 # TODO
 # open webcam
-cap = cv2.VideoCapture
+cap = cv2.VideoCapture(0)
 
 # while webcam is open
 while cap.isOpened():
