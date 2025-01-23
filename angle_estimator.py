@@ -27,24 +27,6 @@ for root, _, files in os.walk(directory):
             print(filename)
             cap = cv2.VideoCapture(os.path.join(directory, filename))
             
-            # get the y rotation degree
-            x = angles[0] * 360
-            y = angles[1] * 360
-            z = angles[2] * 360
-
-            # see where head is tilting
-            # TODO
-            # count angle
-            if y < -10:
-                text = "Looking Left"
-            elif y > 10:
-                text = "Looking Right"
-            elif x < -10:
-                text = "Looking Down"
-            elif x > 10:
-                text = "Looking Up"
-            else:
-                text = "Forward"
             # FIX: NOT ENTERING THIS LOOP
             while cap.isOpened():
                 success, image = cap.read()
@@ -91,6 +73,24 @@ for root, _, files in os.walk(directory):
                         rmat, jac = cv2.Rodrigues(rot_vec)
                         angles, mtxR, mtxQ, Qx, Qy, Qz = cv2.RQDecomp3x3(rmat)
 
+                        # x = angles[0] * 360
+                        y = angles[1] * 360
+                        # z = angles[2] * 360
+
+                        # see where head is tilting
+                        # TEMPORARY
+                        if y < -60:
+                            angle_counts[90] += 1
+                        elif y < -45:
+                            angle_counts[60] += 1
+                        elif y < -30:
+                            angle_counts[45] += 1
+                        elif y < -15:
+                            angle_counts[30] += 1
+                        elif y < -5:
+                            angle_counts[15] += 1
+                        else:
+                            angle_counts[0] += 1
 
                         # display nose direction
                         # nose_3d_projection, jacobian = cv2.projectPoints(nose_3d, rot_vec, trans_vec, cam_matrix, dist_matrix)
