@@ -10,8 +10,9 @@ mp_drawing = mp.solutions.drawing_utils # for displaying whole face mesh
 # drawing specifications
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
-# TODO
 # open webcam
+# TODO
+# open dataset folder
 cap = cv2.VideoCapture(0)
 
 # while webcam is open
@@ -103,6 +104,7 @@ while cap.isOpened():
 
             # see where head is tilting
             # TODO
+            # count angle
             if y < -10:
                 text = "Looking Left"
             elif y > 10:
@@ -125,6 +127,9 @@ while cap.isOpened():
             cv2.putText(image, "x: " + str(np.round(x,2)), (500, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             cv2.putText(image, "y: " + str(np.round(x,2)), (500, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             cv2.putText(image, "z: " + str(np.round(x,2)), (500, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
+            # TODO
+            # add count to txt
 
         end = time.time()
         total_time = end - start
