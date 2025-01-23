@@ -11,6 +11,14 @@ face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_con
 # mp_drawing = mp.solutions.drawing_utils # for displaying whole face mesh
 # drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
+angle_counts = {
+    0: 0, # front
+    15: 0, 
+    30: 0, 
+    45: 0, 
+    60: 0, 
+    90: 0 # side
+}
 
 # while webcam is open
 while cap.isOpened():
