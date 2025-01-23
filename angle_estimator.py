@@ -106,43 +106,40 @@ for root, _, files in os.walk(directory):
             else:
                 text = "Forward"
 
-            # add text to image
-            cv2.putText(image, text, (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2)
-            cv2.putText(image, "x: " + str(np.round(x,2)), (500, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            cv2.putText(image, "y: " + str(np.round(x,2)), (500, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            cv2.putText(image, "z: " + str(np.round(x,2)), (500, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-
-            # TODO
-            # add count to txt
-
-        # draw landmarks with drawing utilities set up
-        mp_drawing.draw_landmarks(
-            image=image, 
-            landmark_list=face_landmarks, 
-            connections=mp_face_mesh.FACEMESH_CONTOURS, 
-            landmark_drawing_spec=drawing_spec, 
-            connection_drawing_spec=drawing_spec
-        )
-
-    cv2.imshow("Head Pose Estimation", image)
-
-    # `esc` or `q` key to terminate program
-    if cv2.waitKey(5) & 0xFF == 27:
-        break
-
-# release webcam
-cap.release()
                         # display nose direction
                         # nose_3d_projection, jacobian = cv2.projectPoints(nose_3d, rot_vec, trans_vec, cam_matrix, dist_matrix)
                         # p1 = (int(nose_2d[0]), int(nose_2d[1]))
                         # p2 = (int(nose_2d[0] + y * 10), int(nose_2d[1] - x * 10))
                         # cv2.line(image, p1, p2, (255, 0, 0), 3)
 
+                        # add text to image
+                        # cv2.putText(image, text, (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2)
+                        # cv2.putText(image, "x: " + str(np.round(x,2)), (500, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                        # cv2.putText(image, "y: " + str(np.round(x,2)), (500, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                        # cv2.putText(image, "z: " + str(np.round(x,2)), (500, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
                     # end = time.time()
                     # total_time = end - start
                     # fps = 1 / total_time
                     # print("FPS: ", fps)
                     # cv2.putText(image, f'FPS: {int(fps)}' , (20, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 2)
+
+                    # draw landmarks with drawing utilities set up
+                    # mp_drawing.draw_landmarks(
+                    #     image=image, 
+                    #     landmark_list=face_landmarks, 
+                    #     connections=mp_face_mesh.FACEMESH_CONTOURS, 
+                    #     landmark_drawing_spec=drawing_spec, 
+                    #     connection_drawing_spec=drawing_spec
+                    # )
+
+        # cv2.imshow("Head Pose Estimation", image)
+
+        # `esc` or `q` key to terminate program
+        # if cv2.waitKey(5) & 0xFF == 27:
+        #     break
+
+            cap.release()
 
 with open("head_pose_results.txt", "w") as f:
     f.write(f"0 (front) {angle_counts[0]}\n")
