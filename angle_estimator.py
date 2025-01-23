@@ -1,7 +1,8 @@
 import cv2
 import mediapipe as mp
 import numpy as np
-import time
+# import time
+
 
 mp_face_mesh = mp.solutions.face_mesh # open face mesh detector
 face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5)
@@ -19,9 +20,6 @@ cap = cv2.VideoCapture(0)
 while cap.isOpened():
     # read image from webcam
     success, image = cap.read()
-
-    # start timing how long the algorithm takes
-    start = time.time()
 
     # flip image horizontally for a later selfie-view display (i.e. not mirrored/flipped)
     # convert color space from BGR to RGB
@@ -131,14 +129,6 @@ while cap.isOpened():
             # TODO
             # add count to txt
 
-        end = time.time()
-        total_time = end - start
-
-        fps = 1 / total_time
-        print("FPS: ", fps)
-
-        cv2.putText(image, f'FPS: {int(fps)}' , (20, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 2)
-
         # draw landmarks with drawing utilities set up
         mp_drawing.draw_landmarks(
             image=image, 
@@ -156,3 +146,9 @@ while cap.isOpened():
 
 # release webcam
 cap.release()
+                    # end = time.time()
+                    # total_time = end - start
+                    # fps = 1 / total_time
+                    # print("FPS: ", fps)
+                    # cv2.putText(image, f'FPS: {int(fps)}' , (20, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 2)
+
