@@ -8,10 +8,9 @@ directory = "D:\\New Folder\\thesis\\datasets\\testing" # CHANGE IF NEEDED
 
 mp_face_mesh = mp.solutions.face_mesh # open face mesh detector
 face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5)
+# mp_drawing = mp.solutions.drawing_utils # for displaying whole face mesh
+# drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
-mp_drawing = mp.solutions.drawing_utils # for displaying whole face mesh
-# drawing specifications
-drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
 # while webcam is open
 while cap.isOpened():
@@ -33,10 +32,6 @@ while cap.isOpened():
     # can write on image (i.e. display text, etc)
     image.flags.writeable = True
 
-    # convert color space back from RGB to BGR
-    # for using opencv methods and operations
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-
     # image height, width, and number of channels
     # for scaling values with image dimensions
     img_h, img_w, img_c = image.shape
@@ -51,11 +46,6 @@ while cap.isOpened():
                 # indexes for e.g. nose, ears, mouth, eyes
                 # TODO: can use more points
                 if idx == 33 or idx == 263 or idx == 1 or idx == 61 or idx == 291 or idx == 199:
-                    if idx == 1:
-                        # set nose2d and nose3d to exact values detected
-                        nose_2d = (lm.x * img_w, lm.y * img_h)
-                        nose_3d = (lm.x * img_w, lm.y * img_h, lm.z * 3000) # scale out values for 3d nose
-
                     # coordinates of landmark (normalized values)
                     # scale with height and width of image (i.e. convert back to image space)
                     x, y = int(lm.x * img_w), int(lm.y * img_h)
@@ -116,12 +106,6 @@ for root, _, files in os.walk(directory):
             else:
                 text = "Forward"
 
-            # display nose direction
-            nose_3d_projection, jacobian = cv2.projectPoints(nose_3d, rot_vec, trans_vec, cam_matrix, dist_matrix)
-            p1 = (int(nose_2d[0]), int(nose_2d[1]))
-            p2 = (int(nose_2d[0] + y * 10), int(nose_2d[1] - x * 10))
-            cv2.line(image, p1, p2, (255, 0, 0), 3)
-
             # add text to image
             cv2.putText(image, text, (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2)
             cv2.putText(image, "x: " + str(np.round(x,2)), (500, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
@@ -148,6 +132,12 @@ for root, _, files in os.walk(directory):
 
 # release webcam
 cap.release()
+                        # display nose direction
+                        # nose_3d_projection, jacobian = cv2.projectPoints(nose_3d, rot_vec, trans_vec, cam_matrix, dist_matrix)
+                        # p1 = (int(nose_2d[0]), int(nose_2d[1]))
+                        # p2 = (int(nose_2d[0] + y * 10), int(nose_2d[1] - x * 10))
+                        # cv2.line(image, p1, p2, (255, 0, 0), 3)
+
                     # end = time.time()
                     # total_time = end - start
                     # fps = 1 / total_time
