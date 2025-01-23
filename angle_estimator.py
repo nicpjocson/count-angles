@@ -4,6 +4,7 @@ import numpy as np
 import os
 # import time
 
+directory = "D:\\New Folder\\thesis\\datasets\\testing" # CHANGE IF NEEDED
 
 mp_face_mesh = mp.solutions.face_mesh # open face mesh detector
 face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5)
@@ -11,11 +12,6 @@ face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_con
 mp_drawing = mp.solutions.drawing_utils # for displaying whole face mesh
 # drawing specifications
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
-
-# open webcam
-# TODO
-# open dataset folder
-cap = cv2.VideoCapture(0)
 
 # while webcam is open
 while cap.isOpened():
@@ -81,6 +77,11 @@ while cap.isOpened():
             cam_matrix = np.array([[focal_length, 0, img_h / 2], 
                                    [0, focal_length, img_w / 2], 
                                    [0, 0, 1]])
+for root, _, files in os.walk(directory):
+    for filename in files:
+        if filename.endswith(".mp4"):
+            print(filename)
+            cap = cv2.VideoCapture(os.path.join(directory, filename))
             
             # distortion parameters
             dist_matrix = np.zeros((4, 1), dtype=np.float64)
@@ -152,4 +153,12 @@ cap.release()
                     # fps = 1 / total_time
                     # print("FPS: ", fps)
                     # cv2.putText(image, f'FPS: {int(fps)}' , (20, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 2)
+
+with open("head_pose_results.txt", "w") as f:
+    f.write(f"0 (front) {angle_counts[0]}\n")
+    f.write(f"15 {angle_counts[15]}\n")
+    f.write(f"30 {angle_counts[30]}\n")
+    f.write(f"45 {angle_counts[45]}\n")
+    f.write(f"60 {angle_counts[60]}\n")
+    f.write(f"90 (side) {angle_counts[90]}\n")
 
