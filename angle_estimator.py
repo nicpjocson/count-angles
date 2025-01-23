@@ -20,7 +20,6 @@ angle_counts = {
     90: 0 # side
 }
 
-# while webcam is open
 for root, _, files in os.walk(directory):
     for filename in files:
         if filename.endswith(".mp4"):
@@ -29,10 +28,14 @@ for root, _, files in os.walk(directory):
             
             # FIX: NOT ENTERING THIS LOOP
             while cap.isOpened():
+                print("0000")
                 success, image = cap.read()
+                print("1111")
                 if not success:
+                    print("2222")
                     break
                 else:
+                    print("3333")
 
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                 image.flags.writeable = False
