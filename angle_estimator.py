@@ -105,16 +105,20 @@ while cap.isOpened():
             # see where head is tilting
             # TODO
             # count angle
-            if y < -10:
-                text = "Looking Left"
-            elif y > 10:
-                text = "Looking Right"
-            elif x < -10:
-                text = "Looking Down"
-            elif x > 10:
-                text = "Looking Up"
+            # SIDE
+            if y < -20 or y > 20:
+                text = 90
+            # 60 DEGREES
+            elif y < -18 or y > 18:
+                text = 60
+            # 45 DEGREES
+            elif y < -14 or y > 14:
+                text = 45
+            # 30 DEGREES
+            elif y < -11 or y > 11:
+                text = 30
             else:
-                text = "Forward"
+                text = "Front or near-frontal"
 
             # display nose direction
             nose_3d_projection, jacobian = cv2.projectPoints(nose_3d, rot_vec, trans_vec, cam_matrix, dist_matrix)
