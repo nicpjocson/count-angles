@@ -55,7 +55,7 @@ while cap.isOpened():
             for idx, lm in enumerate(face_landmarks.landmark):
                 # indexes for e.g. nose, ears, mouth, eyes
                 # TODO: can use more points
-                if idx == 33 or idx == 263 or idx == 1 or idx == 61 or idx == 291 or idx == 199:
+                if idx in [33, 263, 1, 61, 291, 199]:
                     if idx == 1:
                         # set nose2d and nose3d to exact values detected
                         nose_2d = (lm.x * img_w, lm.y * img_h)
