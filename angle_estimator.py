@@ -106,7 +106,7 @@ while cap.isOpened():
             # TODO
             # count angle
             # SIDE
-            if y < -20 or y > 20:
+            if y < -22 or y > 22:
                 text = 90
             # 60 DEGREES
             elif y < -18 or y > 18:
@@ -115,7 +115,7 @@ while cap.isOpened():
             elif y < -14 or y > 14:
                 text = 45
             # 30 DEGREES
-            elif y < -11 or y > 11:
+            elif y < -9 or y > 9:
                 text = 30
             else:
                 text = "Front or near-frontal"
