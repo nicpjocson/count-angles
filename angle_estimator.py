@@ -107,7 +107,6 @@ while cap.isOpened():
             # get angles for all axes (normalized)
             angles, mtxR, mtxQ, Qx, Qy, Qz = cv2.RQDecomp3x3(rmat)
 
-            # get the y rotation degree
             x = angles[0] * 360
             y = angles[1] * 360
             z = angles[2] * 360
