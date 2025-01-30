@@ -1,166 +1,158 @@
 import cv2
 import mediapipe as mp
 import numpy as np
-import time
-# import pickle
+import os
+import shutil
 
-mp_face_mesh = mp.solutions.face_mesh # open face mesh detector
+mp_face_mesh = mp.solutions.face_mesh
 face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5)
-
-mp_drawing = mp.solutions.drawing_utils # for displaying whole face mesh
-# drawing specifications
+mp_drawing = mp.solutions.drawing_utils
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
-# # load camera matrix and distortion coefficients
-# with open("cameraMatrix.pkl", "rb") as f:
-#     cam_matrix = pickle.load(f)
+'''
+Classify angle based on y-axis rotation.
 
-# with open("dist.pkl", "rb") as f:
-#     dist_matrix = pickle.load(f)
+Parameters:
+    y (int): TODO
+Returns:
+    angle (str): TODO
+'''
+def classify_angle(y):    
+    # # NOTE: TEMPORARY THRESHOLDS
+    # # 90 DEGREES (SIDE)
+    # if y < -22 or y > 22:
+    #     angle = "side"
+    # # 60 DEGREES
+    # elif y < -18 or y > 18:
+    #     angle = "60"
+    # # 45 DEGREES
+    # elif y < -14 or y > 14:
+    #     angle = "45"
+    # # 30 DEGREES
+    # elif y < -8 or y > 8:
+    #     angle = "30"
+    # else:
+    #     angle = "front"
 
-# # test
-# print("Camera Matrix:\n", cam_matrix)
-# print("Distortion Coefficients:\n", dist_matrix)
+    # return angle
 
-# open webcam
-cap = cv2.VideoCapture(0)
+    # Front: -15 to 15 degrees
+    if -15 <= y <= 15:
+        return "front"
+    # Side: Extreme angles (>60 or <-60 degrees)
+    elif y > 60 or y < -60:
+        return "side"
+    # 60 degrees: More precise range for angles around 60
+    elif -60 < y <= -45 or 45 <= y < 60:
+        return "60"
+    # 45 degrees: More precise range for angles around 45
+    elif -45 < y <= -30 or 30 <= y < 45:
+        return "45"
+    # 30 degrees: More precise range for angles around 30
+    elif -30 < y <= -15 or 15 < y < 30:
+        return "30"
+    else:
+        return "unknown"  # For angles that do not fit the expected range
 
-# while webcam is open
-while cap.isOpened():
-    # read image from webcam
-    success, image = cap.read()
+'''
+Process all videos in a folder.
 
-    # start timing how long the algorithm takes
-    start = time.time()
+Parameters:
+    input_folder (str): TODO
+    output_folder (str): TODO
+'''
+def process_videos(input_folder, output_folder):
+    for root, _, files in os.walk(input_folder):
+        for video_name in files:
+            if video_name.endswith((".mp4")):
+                video_path = os.path.join(root, video_name)
+                classify_video(video_path, output_folder)
 
-    # flip image horizontally for a later selfie-view display (i.e. not mirrored/flipped)
-    # convert color space from BGR to RGB
-    image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
 
-    # for improving performance
-    # makes it so program can only read from the image
-    image.flags.writeable = False
+'''
+Process a single video.
 
-    # get result (returns normalized values)
-    results = face_mesh.process(image)
+Parameters:
+    video_path (str): TODO
+    output_folder (str): TODO
+'''
+def classify_video(video_path, output_folder):
+    cap = cv2.VideoCapture(video_path)
 
-    # for improving performance
-    # can write on image (i.e. display text, etc)
-    image.flags.writeable = True
+    angle_counts = {
+        "front": 0,
+        "side": 0,
+        "30": 0,
+        "45": 0,
+        "60": 0
+    }
 
-    # convert color space back from RGB to BGR
-    # for using opencv methods and operations
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    while cap.isOpened():
+        success, image = cap.read()
+        if not success:
+            break
 
-    # image height, width, and number of channels
-    # for scaling values with image dimensions
-    img_h, img_w, img_c = image.shape
-    face_3d = []
-    face_2d = []
+        # preprocess frame
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image.flags.writeable = False
 
-    # if there are detections
-    if results.multi_face_landmarks:
-        # run thru all landmarks detected in the image
-        for face_landmarks in results.multi_face_landmarks:
-            for idx, lm in enumerate(face_landmarks.landmark):
-                # indexes for e.g. nose, ears, mouth, eyes
-                # TODO: can use more points
-                if idx in [33, 263, 1, 61, 291, 199]:
-                    if idx == 1:
-                        # set nose2d and nose3d to exact values detected
-                        nose_2d = (lm.x * img_w, lm.y * img_h)
-                        nose_3d = (lm.x * img_w, lm.y * img_h, lm.z * 3000) # scale out values for 3d nose
+        # process with mediapipe
+        results = face_mesh.process(image)
 
-                    # coordinates of landmark (normalized values)
-                    # scale with height and width of image (i.e. convert back to image space)
-                    x, y = int(lm.x * img_w), int(lm.y * img_h)
+        if results.multi_face_landmarks:
+            for face_landmarks in results.multi_face_landmarks:
+                img_h, img_w, _ = image.shape
+                face_3d = []
+                face_2d = []
 
-                    # get 2D coordinates
-                    face_2d.append([x, y])
-                    # get 3D coordinates
-                    face_3d.append([x, y, lm.z])
+                for idx, lm in enumerate(face_landmarks.landmark):
+                    if idx in [33, 263, 1, 61, 291, 199]:
+                        x, y = int(lm.x * img_w), int(lm.y * img_h)
+                        face_2d.append([x, y])
+                        face_3d.append([x, y, lm.z * 3000])
 
-            # convert 2D coordinates to numpy array
-            face_2d = np.array(face_2d, dtype=np.float64)
-            # covert 3D coordinates to numpy array
-            face_3d = np.array(face_3d, dtype=np.float64)
+                if face_2d and face_3d:
+                    face_2d = np.array(face_2d, dtype=np.float64)
+                    face_3d = np.array(face_3d, dtype=np.float64)
 
-            # set up camera matrix
-            focal_length = 1 * img_w
+                    # camera parameters
+                    focal_length = img_w
+                    cam_matrix = np.array([[focal_length, 0, img_w / 2],
+                                           [0, focal_length, img_h / 2],
+                                           [0, 0, 1]])
+                    dist_matrix = np.zeros((4, 1), dtype=np.float64)
 
-            # intrinsic parameters of camera
-            cam_matrix = np.array([[focal_length, 0, img_h / 2], 
-                                   [0, focal_length, img_w / 2], 
-                                   [0, 0, 1]])
-            
-            # distortion parameters
-            dist_matrix = np.zeros((4, 1), dtype=np.float64)
+                    # solve PnP
+                    success, rot_vec, trans_vec = cv2.solvePnP(face_3d, face_2d, cam_matrix, dist_matrix)
+                    if success:
+                        rmat, _ = cv2.Rodrigues(rot_vec)
+                        angles, _, _, _, _, _ = cv2.RQDecomp3x3(rmat)
 
-            # solve PnP
-            # rot_vec = how much the points are rotated in the image
-            # trans_vec = how much the points are translated around
-            success, rot_vec, trans_vec = cv2.solvePnP(face_3d, face_2d, cam_matrix, dist_matrix)
+                        y_angle = angles[1] * 360
+                        detected_angle = classify_angle(y_angle)
+                        angle_counts[detected_angle] += 1
 
-            # get rotational matrix
-            rmat, jac = cv2.Rodrigues(rot_vec)
+    cap.release()
 
-            # get angles for all axes (normalized)
-            angles, mtxR, mtxQ, Qx, Qy, Qz = cv2.RQDecomp3x3(rmat)
+    # classify based on angle counts
+    angles_above_threshold = [angle for angle, count in angle_counts.items() if count >= 10]
 
-            x = angles[0] * 360
-            y = angles[1] * 360
-            z = angles[2] * 360
+    if len(angles_above_threshold) > 1:
+        classification = "mixed"
+    else:
+        classification = max(angle_counts, key=angle_counts.get)
 
-            # see where head is tilting
-            # SIDE
-            if y < 0 or y > 0:
-                text = 0
-            # 60 DEGREES
-            elif y < 0 or y > 0:
-                text = 0
-            # 45 DEGREES
-            elif y < 0 or y > 0:
-                text = 0
-            # 30 DEGREES
-            elif y < 0 or y > 0:
-                text = 0
-            else:
-                text = "Front or near-frontal"
+    # move video to classified folder
+    output_subfolder = os.path.join(output_folder, classification)
+    os.makedirs(output_subfolder, exist_ok=True)
+    shutil.move(video_path, os.path.join(output_subfolder, os.path.basename(video_path)))
 
-            # display nose direction
-            nose_3d_projection, jacobian = cv2.projectPoints(nose_3d, rot_vec, trans_vec, cam_matrix, dist_matrix)
-            p1 = (int(nose_2d[0]), int(nose_2d[1]))
-            p2 = (int(nose_2d[0] + y * 10), int(nose_2d[1] - x * 10))
-            cv2.line(image, p1, p2, (255, 0, 0), 3)
+    print(f"Classified {os.path.basename(video_path)} as {classification}")
 
-            # add text to image
-            cv2.putText(image, str(text), (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2)
-            cv2.putText(image, "x: " + str(np.round(x,2)), (500, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            cv2.putText(image, "y: " + str(np.round(y,2)), (500, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            cv2.putText(image, "z: " + str(np.round(z,2)), (500, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+if __name__ == "__main__":
+    input_dir = "C:\\Users\\nicpj\Desktop\\New folder\\AY 24-25\\temp\\datasets\\lrs3_test_v0.4"
+    output_dir = "C:\\Users\\nicpj\Desktop\\New folder\\AY 24-25\\temp\\datasets\\lrs3_classified"
 
-        end = time.time()
-        total_time = end - start
+    os.makedirs(output_dir, exist_ok=True)
 
-        fps = 1 / total_time
-        print("FPS: ", fps)
-
-        cv2.putText(image, f'FPS: {int(fps)}' , (20, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 2)
-
-        # draw landmarks with drawing utilities set up
-        mp_drawing.draw_landmarks(
-            image=image, 
-            landmark_list=face_landmarks, 
-            connections=mp_face_mesh.FACEMESH_CONTOURS, 
-            landmark_drawing_spec=drawing_spec, 
-            connection_drawing_spec=drawing_spec
-        )
-
-    cv2.imshow("Head Pose Estimation", image)
-
-    # `esc` or `q` key to terminate program
-    if cv2.waitKey(5) & 0xFF == 27:
-        break
-
-# release webcam
-cap.release()
+    process_videos(input_dir, output_dir)
