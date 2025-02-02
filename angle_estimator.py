@@ -36,23 +36,23 @@ def classify_angle(y):
 
     # return angle
 
-    # Front: -15 to 15 degrees
-    if -15 <= y <= 15:
-        return "front"
-    # Side: Extreme angles (>60 or <-60 degrees)
-    elif y > 60 or y < -60:
+    # side
+    if y < -60 or y > 60:
         return "side"
-    # 60 degrees: More precise range for angles around 60
+    # 60 degrees
     elif -60 < y <= -45 or 45 <= y < 60:
         return "60"
-    # 45 degrees: More precise range for angles around 45
+    # 45 degrees
     elif -45 < y <= -30 or 30 <= y < 45:
         return "45"
-    # 30 degrees: More precise range for angles around 30
+    # 30 degrees
     elif -30 < y <= -15 or 15 < y < 30:
         return "30"
+    # front
+    elif -15 <= y <= 15:
+        return "front"
     else:
-        return "unknown"  # For angles that do not fit the expected range
+        return "unknown"
 
 '''
 Process all videos in a folder.
@@ -67,7 +67,6 @@ def process_videos(input_folder, output_folder):
             if video_name.endswith((".mp4")):
                 video_path = os.path.join(root, video_name)
                 classify_video(video_path, output_folder)
-
 
 '''
 Process a single video.
@@ -144,14 +143,51 @@ def classify_video(video_path, output_folder):
 
     # move video to classified folder
     output_subfolder = os.path.join(output_folder, classification)
-    os.makedirs(output_subfolder, exist_ok=True)
-    shutil.move(video_path, os.path.join(output_subfolder, os.path.basename(video_path)))
+    move_video(video_path, output_subfolder)
 
     print(f"Classified {os.path.basename(video_path)} as {classification}")
 
+'''
+Move a video from its old directory to a new directory.
+
+Parameters:
+    video_path (str): TODO
+    output_folder (str): TODO
+'''
+def move_video(video_path, output_folder):
+    # get name of folder where video is located
+    subfolder_name = os.path.basename(os.path.dirname(video_path))
+    
+    # ensure output folder exists
+    os.makedirs(output_folder, exist_ok=True)
+    
+    # get base filename and extension of the video
+    base_name = os.path.basename(video_path)
+    file_name, file_extension = os.path.splitext(base_name)
+    
+    # format new video name as "<subfolder>_<orig_video_name>"
+    # to avoid overwriting
+    new_file_name = f"{subfolder_name}_{file_name}{file_extension}"
+    
+    # check if a file with the same name already exists in output folder
+    new_file_path = os.path.join(output_folder, new_file_name)
+    counter = 1
+    while os.path.exists(new_file_path):
+        # if exists, add a counter to filename
+        new_file_name = f"{subfolder_name}_{file_name}_{counter}{file_extension}"
+        new_file_path = os.path.join(output_folder, new_file_name)
+        counter += 1
+    
+    # move video to new destination with formatted filename
+    shutil.move(video_path, new_file_path)
+    print(f"Moved {base_name} to {new_file_path}")
+
+'''
+main
+'''
 if __name__ == "__main__":
-    input_dir = "C:\\Users\\nicpj\Desktop\\New folder\\AY 24-25\\temp\\datasets\\lrs3_test_v0.4"
-    output_dir = "C:\\Users\\nicpj\Desktop\\New folder\\AY 24-25\\temp\\datasets\\lrs3_classified"
+    input_dir = "C:\\Users\\nicpj\\Desktop\\New folder\\AY 24-25\\temp\\datasets\\lrs3_test_v0.4"
+    output_dir = "C:\\Users\\nicpj\\Desktop\\New folder\\AY 24-25\\temp\\datasets\\lrs3_classified"
 
     os.makedirs(output_dir, exist_ok=True)
 
