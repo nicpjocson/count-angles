@@ -17,42 +17,39 @@ Parameters:
 Returns:
     angle (str): TODO
 '''
-def classify_angle(y):    
-    # # NOTE: TEMPORARY THRESHOLDS
-    # # 90 DEGREES (SIDE)
-    # if y < -22 or y > 22:
-    #     angle = "side"
-    # # 60 DEGREES
-    # elif y < -18 or y > 18:
-    #     angle = "60"
-    # # 45 DEGREES
-    # elif y < -14 or y > 14:
-    #     angle = "45"
-    # # 30 DEGREES
-    # elif y < -8 or y > 8:
-    #     angle = "30"
-    # else:
-    #     angle = "front"
-
-    # return angle
-
-    # side
-    if y < -60 or y > 60:
+def classify_angle(y):
+    # 90 DEGREES (SIDE)
+    if y < -22 or y > 22:
         return "side"
-    # 60 degrees
-    elif -60 < y <= -45 or 45 <= y < 60:
+    # 60 DEGREES
+    elif y < -18 or y > 18:
         return "60"
-    # 45 degrees
-    elif -45 < y <= -30 or 30 <= y < 45:
+    # 45 DEGREES
+    elif y < -14 or y > 14:
         return "45"
-    # 30 degrees
-    elif -30 < y <= -15 or 15 < y < 30:
+    # 30 DEGREES
+    elif y < -7 or y > 8:
         return "30"
-    # front
-    elif -15 <= y <= 15:
-        return "front"
     else:
-        return "unknown"
+        return "front"
+
+    # # side
+    # if y < -60 or y > 60:
+    #     return "side"
+    # # 60 degrees
+    # elif -60 < y <= -45 or 45 <= y < 60:
+    #     return "60"
+    # # 45 degrees
+    # elif -45 < y <= -30 or 30 <= y < 45:
+    #     return "45"
+    # # 30 degrees
+    # elif -30 < y <= -15 or 15 < y < 30:
+    #     return "30"
+    # # front
+    # elif -15 <= y <= 15:
+    #     return "front"
+    # else:
+    #     return "unknown"
 
 '''
 Process all videos in a folder.
@@ -86,10 +83,14 @@ def classify_video(video_path, output_folder):
         "60": 0
     }
 
+    frame_count = 0
+
     while cap.isOpened():
         success, image = cap.read()
         if not success:
             break
+
+        frame_count += 1
 
         # preprocess frame
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -127,19 +128,35 @@ def classify_video(video_path, output_folder):
                         rmat, _ = cv2.Rodrigues(rot_vec)
                         angles, _, _, _, _, _ = cv2.RQDecomp3x3(rmat)
 
-                        y_angle = angles[1] * 360
+                        y_angle = angles[1]
                         detected_angle = classify_angle(y_angle)
                         angle_counts[detected_angle] += 1
 
     cap.release()
+    
+    # DEBUGGING
+    for angle, count in angle_counts.items():
+        print(f"{angle}: {count}")
 
-    # classify based on angle counts
-    angles_above_threshold = [angle for angle, count in angle_counts.items() if count >= 10]
+    # Calculate percentage of frames for each angle
+    angle_percentages = {angle: (count / frame_count) * 100 for angle, count in angle_counts.items()}
 
-    if len(angles_above_threshold) > 1:
-        classification = "mixed"
+    # Check for dominant angle
+    dominant_angle = max(angle_counts, key=angle_counts.get)
+    dominant_percentage = angle_percentages[dominant_angle]
+
+    # Classification logic
+    if dominant_percentage > 80:
+        # If one angle dominates >80% of the frames
+        classification = dominant_angle
     else:
-        classification = max(angle_counts, key=angle_counts.get)
+        # Identify angles that occur in more than 15% of frames
+        significant_angles = [angle for angle, percentage in angle_percentages.items() if percentage > 15]
+
+        if len(significant_angles) > 1:
+            classification = "mixed"
+        else:
+            classification = dominant_angle
 
     # move video to classified folder
     output_subfolder = os.path.join(output_folder, classification)
@@ -149,6 +166,7 @@ def classify_video(video_path, output_folder):
 
 '''
 Move a video from its old directory to a new directory.
+Additionally rename the video file to avoid overwriting.
 
 Parameters:
     video_path (str): TODO
@@ -186,7 +204,7 @@ def move_video(video_path, output_folder):
 main
 '''
 if __name__ == "__main__":
-    input_dir = "C:\\Users\\nicpj\\Desktop\\New folder\\AY 24-25\\temp\\datasets\\lrs3_test_v0.4"
+    input_dir = "C:\\Users\\nicpj\\Desktop\\New folder\\AY 24-25\\temp\\datasets\\testing_named"
     output_dir = "C:\\Users\\nicpj\\Desktop\\New folder\\AY 24-25\\temp\\datasets\\lrs3_classified"
 
     os.makedirs(output_dir, exist_ok=True)
