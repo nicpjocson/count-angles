@@ -120,8 +120,9 @@ def classify_video(video_path, output_folder):
                         cv2.putText(image, f"Y-Angle: {y_angle:.2f}°", (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
                         # draw X, Y, Z axes
-                        # we will draw lines in the 2D image using the rotation matrix
+                        # draw lines in the 2D image using the rotation matrix
                         axis = np.array([[0, 0, 0], [100, 0, 0], [0, 100, 0], [0, 0, 100]], dtype=np.float64)
+                        # axis = np.array([[0, 0, 0], [30, 0, 0], [0, 30, 0], [0, 0, 30]], dtype=np.float64)
                         img_points, _ = cv2.projectPoints(axis, rot_vec, trans_vec, cam_matrix, dist_matrix)
 
                         img_points = np.int32(img_points).reshape(-1, 2)
@@ -141,7 +142,6 @@ def classify_video(video_path, output_folder):
     cap.release()
     cv2.destroyAllWindows()
 
-    # # for debugging
     # for angle, count in angle_counts.items():
     #     print(f"{angle}: {count}")
 
@@ -200,7 +200,7 @@ def move_video(video_path, output_folder):
     print(f"Moved {base_name} to {new_file_path}")
 
 if __name__ == "__main__":
-    input_dir = "C:\\Users\\nicpj\\Desktop\\New folder\\AY 24-25\\temp\\datasets\\testing_named"
+    input_dir = "C:\\Users\\nicpj\\Desktop\\New folder\\AY 24-25\\temp\\datasets\\testing"
     output_dir = "C:\\Users\\nicpj\\Desktop\\New folder\\AY 24-25\\temp\\datasets\\lrs3_classified"
 
     os.makedirs(output_dir, exist_ok=True)
