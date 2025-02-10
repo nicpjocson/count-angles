@@ -200,8 +200,8 @@ def move_video(video_path, output_folder):
     print(f"Moved {base_name} to {new_file_path}")
 
 if __name__ == "__main__":
-    input_dir = "C:\\Users\\nicpj\\Desktop\\New folder\\AY 24-25\\temp\\datasets\\testing"
-    output_dir = "C:\\Users\\nicpj\\Desktop\\New folder\\AY 24-25\\temp\\datasets\\lrs3_classified"
+    input_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/temp/datasets/testing"
+    output_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/temp/datasets/lrs3_classified"
 
     os.makedirs(output_dir, exist_ok=True)
 
