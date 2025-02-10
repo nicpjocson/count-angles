@@ -84,6 +84,12 @@ def classify_video(video_path, output_folder):
                 face_2d = []
 
                 for idx, lm in enumerate(face_landmarks.landmark):
+                    # 33 - right eye corner
+                    # 263 - left eye corner
+                    # 1 - nose tip
+                    # 61 - right lip corner
+                    # 291 - left lip corner
+                    # 199 - chin
                     if idx in [33, 263, 1, 61, 291, 199]:
                         x, y = int(lm.x * img_w), int(lm.y * img_h)
                         face_2d.append([x, y])
@@ -133,10 +139,11 @@ def classify_video(video_path, output_folder):
             break
 
     cap.release()
-    
-    # DEBUGGING
-    for angle, count in angle_counts.items():
-        print(f"{angle}: {count}")
+    cv2.destroyAllWindows()
+
+    # # for debugging
+    # for angle, count in angle_counts.items():
+    #     print(f"{angle}: {count}")
 
     # Calculate percentage of frames for each angle
     angle_percentages = {angle: (count / frame_count) * 100 for angle, count in angle_counts.items()}
@@ -167,14 +174,14 @@ def classify_video(video_path, output_folder):
 def move_video(video_path, output_folder):
     # get name of folder where video is located
     subfolder_name = os.path.basename(os.path.dirname(video_path))
-    
+
     # ensure output folder exists
     os.makedirs(output_folder, exist_ok=True)
-    
+
     # get base filename and extension of the video
     base_name = os.path.basename(video_path)
     file_name, file_extension = os.path.splitext(base_name)
-    
+
     # format new video name as "<subfolder>_<orig_video_name>"
     # to avoid overwriting
     new_file_name = f"{subfolder_name}_{file_name}{file_extension}"
