@@ -9,14 +9,6 @@ face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_con
 # mp_drawing = mp.solutions.drawing_utils
 # drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
-'''
-Classify angle based on y-axis rotation.
-
-Parameters:
-    y (int): TODO
-Returns:
-    angle (str): TODO
-'''
 def classify_angle(y):
     # 90 DEGREES (SIDE)
     if y < -22 or y > 22:
@@ -51,13 +43,6 @@ def classify_angle(y):
     # else:
     #     return "unknown"
 
-'''
-Process all videos in a folder.
-
-Parameters:
-    input_folder (str): TODO
-    output_folder (str): TODO
-'''
 def process_videos(input_folder, output_folder):
     for root, _, files in os.walk(input_folder):
         for video_name in files:
@@ -65,13 +50,6 @@ def process_videos(input_folder, output_folder):
                 video_path = os.path.join(root, video_name)
                 classify_video(video_path, output_folder)
 
-'''
-Process a single video.
-
-Parameters:
-    video_path (str): TODO
-    output_folder (str): TODO
-'''
 def classify_video(video_path, output_folder):
     cap = cv2.VideoCapture(video_path)
 
@@ -164,14 +142,6 @@ def classify_video(video_path, output_folder):
 
     print(f"Classified {os.path.basename(video_path)} as {classification}")
 
-'''
-Move a video from its old directory to a new directory.
-Additionally rename the video file to avoid overwriting.
-
-Parameters:
-    video_path (str): TODO
-    output_folder (str): TODO
-'''
 def move_video(video_path, output_folder):
     # get name of folder where video is located
     subfolder_name = os.path.basename(os.path.dirname(video_path))
@@ -200,9 +170,6 @@ def move_video(video_path, output_folder):
     shutil.move(video_path, new_file_path)
     print(f"Moved {base_name} to {new_file_path}")
 
-'''
-main
-'''
 if __name__ == "__main__":
     input_dir = "C:\\Users\\nicpj\\Desktop\\New folder\\AY 24-25\\temp\\datasets\\testing_named"
     output_dir = "C:\\Users\\nicpj\\Desktop\\New folder\\AY 24-25\\temp\\datasets\\lrs3_classified"
