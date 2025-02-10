@@ -72,7 +72,7 @@ def classify_video(video_path, output_folder):
 
         # preprocess frame
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image.flags.writeable = False
+        # image.flags.writeable = False
 
         # process with mediapipe
         results = face_mesh.process(image)
@@ -109,6 +109,28 @@ def classify_video(video_path, output_folder):
                         y_angle = angles[1]
                         detected_angle = classify_angle(y_angle)
                         angle_counts[detected_angle] += 1
+
+                        # draw Y angle on the frame
+                        cv2.putText(image, f"Y-Angle: {y_angle:.2f}°", (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+                        # draw X, Y, Z axes
+                        # we will draw lines in the 2D image using the rotation matrix
+                        axis = np.array([[0, 0, 0], [100, 0, 0], [0, 100, 0], [0, 0, 100]], dtype=np.float64)
+                        img_points, _ = cv2.projectPoints(axis, rot_vec, trans_vec, cam_matrix, dist_matrix)
+
+                        img_points = np.int32(img_points).reshape(-1, 2)
+
+                        # draw the 3D axes (X, Y, Z) on the image
+                        cv2.line(image, tuple(img_points[0]), tuple(img_points[1]), (255, 0, 0), 5)  # X axis (blue)
+                        cv2.line(image, tuple(img_points[0]), tuple(img_points[2]), (0, 255, 0), 5)  # Y axis (green)
+                        cv2.line(image, tuple(img_points[0]), tuple(img_points[3]), (0, 0, 255), 5)  # Z axis (red)
+
+    # convert back to BGR
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        cv2.imshow('Video', image)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
     cap.release()
     
