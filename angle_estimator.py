@@ -11,16 +11,16 @@ face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_con
 
 def classify_angle(y):
     # 90 DEGREES (SIDE)
-    if y < -22 or y > 22:
+    if y < -24 or y > 12:
         return "side"
     # 60 DEGREES
-    elif y < -18 or y > 18:
+    elif y < -21 or y > 11:
         return "60"
     # 45 DEGREES
-    elif y < -14 or y > 14:
+    elif y < -14 or y > 9:
         return "45"
     # 30 DEGREES
-    elif y < -7 or y > 8:
+    elif y < -11 or y > 8:
         return "30"
     else:
         return "front"
@@ -200,7 +200,7 @@ def move_video(video_path, output_folder):
     print(f"Moved {base_name} to {new_file_path}")
 
 if __name__ == "__main__":
-    input_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/temp/datasets/testing"
+    input_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/thesis/datasets/lrs3_test_v0.4/test"
     output_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/temp/datasets/lrs3_classified"
 
     os.makedirs(output_dir, exist_ok=True)
