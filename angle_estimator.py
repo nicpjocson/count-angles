@@ -65,8 +65,8 @@ while cap.isOpened():
             for idx, lm in enumerate(face_landmarks.landmark):
                 # indexes for e.g. nose, ears, mouth, eyes
                 # TODO: can use more points
-                if idx in [33, 263, 1, 61, 291, 199]:
-                    if idx == 1:
+                if idx in [33, 263, 1, 61, 291, 199, 4]:
+                    if idx == 4:
                         # set nose2d and nose3d to exact values detected
                         nose_2d = (lm.x * img_w, lm.y * img_h)
                         nose_3d = (lm.x * img_w, lm.y * img_h, lm.z * 3000) # scale out values for 3d nose
@@ -112,20 +112,20 @@ while cap.isOpened():
             z = angles[2] * 360
 
             # see where head is tilting
-            # SIDE
-            if y < 0 or y > 0:
-                text = 0
+            # 90 DEGREES (SIDE)
+            if y < -24 or y > 12:
+                text = "side"
             # 60 DEGREES
-            elif y < 0 or y > 0:
-                text = 0
+            elif y < -21 or y > 11:
+                text = "60"
             # 45 DEGREES
-            elif y < 0 or y > 0:
-                text = 0
+            elif y < -14 or y > 9:
+                text = "45"
             # 30 DEGREES
-            elif y < 0 or y > 0:
-                text = 0
+            elif y < -11 or y > 8:
+                text = "30"
             else:
-                text = "Front or near-frontal"
+                text = "front"
 
             # display nose direction
             nose_3d_projection, jacobian = cv2.projectPoints(nose_3d, rot_vec, trans_vec, cam_matrix, dist_matrix)
