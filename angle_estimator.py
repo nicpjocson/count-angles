@@ -153,8 +153,8 @@ def classify_video(video_path, output_folder):
     dominant_percentage = angle_percentages[dominant_angle]
 
     # Classification logic
-    if dominant_percentage > 80:
-        # If one angle dominates >80% of the frames
+    if dominant_percentage > 90:
+        # If one angle dominates 90% of the frames
         classification = dominant_angle
     else:
         # Identify angles that occur in more than 15% of frames
@@ -167,13 +167,15 @@ def classify_video(video_path, output_folder):
 
     # move video to classified folder
     output_subfolder = os.path.join(output_folder, classification)
-    move_video(video_path, output_subfolder)
+    move_video(video_path, output_subfolder, input_dir)
 
     print(f"Classified {os.path.basename(video_path)} as {classification}")
 
-def move_video(video_path, output_folder):
+def move_video(video_path, output_folder, input_folder):
     # get name of folder where video is located
-    subfolder_name = os.path.basename(os.path.dirname(video_path))
+    relative_path = os.path.relpath(os.path.dirname(video_path), input_folder)
+    subfolder_name = relative_path.replace(os.sep, "_")
+
 
     # ensure output folder exists
     os.makedirs(output_folder, exist_ok=True)
@@ -200,8 +202,8 @@ def move_video(video_path, output_folder):
     print(f"Moved {base_name} to {new_file_path}")
 
 if __name__ == "__main__":
-    input_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/thesis/datasets/lrs3_test_v0.4/test"
-    output_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/temp/datasets/lrs3_classified"
+    input_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/thesis/datasets/lrs2_v1/mvlrs_v1"
+    output_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/thesis/datasets/lrs2_classified"
 
     os.makedirs(output_dir, exist_ok=True)
 
