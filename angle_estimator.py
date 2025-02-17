@@ -132,15 +132,15 @@ def classify_video(video_path, output_folder):
                         cv2.line(image, tuple(img_points[0]), tuple(img_points[2]), (0, 255, 0), 5)  # Y axis (green)
                         cv2.line(image, tuple(img_points[0]), tuple(img_points[3]), (0, 0, 255), 5)  # Z axis (red)
 
-    # convert back to BGR
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        cv2.imshow('Video', image)
+    # # convert back to BGR
+    #     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    #     cv2.imshow('Video', image)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+    #     if cv2.waitKey(1) & 0xFF == ord('q'):
+    #         break
 
     cap.release()
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
 
     # for angle, count in angle_counts.items():
     #     print(f"{angle}: {count}")
