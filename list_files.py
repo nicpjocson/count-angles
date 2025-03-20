@@ -2,24 +2,32 @@ import os
 
 # Define possible values
 # sets = ["pretrainDataList", "testDataList", "trainDataList", "valDataList"]
-sets = ["lrs3_test_classified", "lrs3_trainval_classified"]
+# sets = ["lrs3_test_classified", "lrs3_trainval_classified"]
 facial_angles = ["front", "30", "45", "60", "side", "mixed"]
 
 # Input folder and output file
 # input_folder = "C:/Users/nicpj/Desktop/New folder/AY 24-25/thesis/datasets/lrs2_classified/sorted_videos"
-input_folder = "C:/Users/nicpj/Desktop/New folder/AY 24-25/thesis/datasets/lrs3_classified"
+# input_folder = "C:/Users/nicpj/Desktop/New folder/AY 24-25/thesis/datasets/lrs3_classified"
+input_folder = "C:/Users/nicpj/Desktop/New folder/AY 24-25/thesis/datasets/lrs3_pretrain_classified"
 # output_file = "lrs2_sorted.txt"
-output_file = "lrs3_sorted_test_trainval.txt"
+output_file = "lrs3_sorted_pretraing.txt"
 
 # Collect file paths
 file_paths = []
-for set_name in sets:
-    for angle in facial_angles:
-        folder_path = os.path.join(input_folder, set_name, angle)
-        if os.path.exists(folder_path):
-            for filename in os.listdir(folder_path):
-                file_path = f"{set_name}/{angle}/{filename}"
-                file_paths.append(file_path)
+# for set_name in sets:
+#     for angle in facial_angles:
+#         folder_path = os.path.join(input_folder, set_name, angle)
+#         if os.path.exists(folder_path):
+#             for filename in os.listdir(folder_path):
+#                 file_path = f"{set_name}/{angle}/{filename}"
+#                 file_paths.append(file_path)
+
+for angle in facial_angles:
+    folder_path = os.path.join(input_folder, angle)
+    if os.path.exists(folder_path):
+        for filename in os.listdir(folder_path):
+            file_path = f"{angle}/{filename}"
+            file_paths.append(file_path)
 
 # Save to output file
 with open(output_file, "w") as f:
