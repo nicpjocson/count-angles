@@ -117,7 +117,7 @@ def classify_video(video_path, output_folder):
                         angle_counts[detected_angle] += 1
 
                         # draw Y angle on the frame
-                        cv2.putText(image, f"Y-Angle: {y_angle:.2f}°", (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                        cv2.putText(image, f"{y_angle:.2f}", (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
                         # draw X, Y, Z axes
                         # draw lines in the 2D image using the rotation matrix
@@ -132,18 +132,18 @@ def classify_video(video_path, output_folder):
                         cv2.line(image, tuple(img_points[0]), tuple(img_points[2]), (0, 255, 0), 5)  # Y axis (green)
                         cv2.line(image, tuple(img_points[0]), tuple(img_points[3]), (0, 0, 255), 5)  # Z axis (red)
 
-    # # convert back to BGR
-    #     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-    #     cv2.imshow('Video', image)
+    # convert back to BGR
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        cv2.imshow('Video', image)
 
-    #     if cv2.waitKey(1) & 0xFF == ord('q'):
-    #         break
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
     cap.release()
-    # cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
 
-    # for angle, count in angle_counts.items():
-    #     print(f"{angle}: {count}")
+    for angle, count in angle_counts.items():
+        print(f"{angle}: {count}")
 
     # Calculate percentage of frames for each angle
     angle_percentages = {angle: (count / frame_count) * 100 for angle, count in angle_counts.items()}
@@ -202,8 +202,11 @@ def move_video(video_path, output_folder, input_folder):
     print(f"Moved {base_name} to {new_file_path}")
 
 if __name__ == "__main__":
-    input_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/thesis/datasets/lrs2_v1/mvlrs_v1"
+    # input_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/thesis/datasets/lrs2_v1/mvlrs_v1"
+    input_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/thesis/datasets/5535415699068794046"
+    # input_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/thesis/datasets/lrs3_pretrain_temp"
     output_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/thesis/datasets/lrs2_classified"
+    # output_dir = "C:/Users/nicpj/Desktop/New folder/AY 24-25/thesis/datasets/lrs3_pretrain_classified"
 
     os.makedirs(output_dir, exist_ok=True)
 
